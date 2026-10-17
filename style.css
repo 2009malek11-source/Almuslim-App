@@ -1,0 +1,50 @@
+/* ===== أيقونات SVG المخصصة ===== */
+.vi{width:1.2em;height:1.2em;display:inline-block;vertical-align:-.22em;color:var(--green,#176f7d);transition:transform .28s cubic-bezier(.3,1.5,.5,1),color .2s;flex:none}
+body.dark .vi{color:var(--gold,#e4c77a)}
+.ico.vIco{display:inline-grid;place-items:center}
+.ico .vi{width:30px;height:30px;stroke-width:1.6}
+.vi.vInline{width:1.15em;height:1.15em;vertical-align:-.2em}
+.tile:hover .vi{transform:translateY(-2px) scale(1.08)}
+.tile:active .vi,.nav button:active .vi,.vBtn:active .vi,.back:active{transform:scale(.88)}
+.nav button .vi{width:1.35em;height:1.35em}
+.vi-settings{transition:transform .65s cubic-bezier(.2,.8,.2,1)}
+.nav button:hover .vi-settings,.nav button:active .vi-settings,.tile:hover .vi-settings{transform:rotate(75deg)}
+.vi-settings .shield{opacity:.35}
+.vi-sparkle,.vi-install{transition:transform .35s ease}
+.tile:hover .vi-sparkle{transform:rotate(18deg) scale(1.1)}
+.tile:hover .vi-install{transform:translateY(3px)}
+.tile:hover .vi-compass{transform:rotate(35deg)}
+.vBtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:6px 0;min-height:48px;font-size:calc(16px*var(--v105-fs,1));border-radius:14px;cursor:pointer;touch-action:manipulation;transition:transform .15s,box-shadow .2s}
+.vBtn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.14)}
+.vBtn:active{transform:scale(.98)}
+.vBtn.primary .vi{color:#fff}
+@media(prefers-reduced-motion:reduce){.vi,.vi-settings,.vBtn{transition:none!important}.tile:hover .vi,.nav button:hover .vi-settings{transform:none!important}}
+/* ===== صفحة التثبيت والمشاركة ===== */
+#install .card h3{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.vHero{text-align:center}
+.vHeroIc{width:64px;height:64px;margin:4px auto 6px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green,#176f7d),var(--green2,#28785d))}
+.vHeroIc .vi{width:34px;height:34px;color:#fff}
+.vSteps{list-style:none;margin:6px 0 0;padding:0;counter-reset:s}
+.vSteps li{counter-increment:s;display:flex;gap:10px;align-items:flex-start;padding:7px 0;line-height:1.9}
+.vSteps li::before{content:counter(s);flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:calc(14px*var(--v105-fs,1));background:var(--green,#176f7d);color:#fff;margin-top:2px}
+.vSocial{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.vSoc{flex:1 1 40%;text-align:center;padding:11px 8px;border-radius:12px;text-decoration:none;font-weight:600;border:1px solid rgba(127,127,127,.35);color:var(--text);transition:transform .15s,background .2s}
+.vSoc:hover{background:rgba(127,127,127,.12);transform:translateY(-1px)}.vSoc:active{transform:scale(.97)}
+.vQr{text-align:center}
+.vQr h3{justify-content:center}
+.vQr img{display:block;margin:8px auto;padding:12px;border-radius:20px;background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.15);max-width:80%;height:auto}
+#vIosHint{position:fixed;left:10px;right:10px;bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:99998;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:16px;background:var(--green,#176f7d);color:#fff;font-size:calc(14px*var(--v105-fs,1));line-height:1.7;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#vIosHint .vi{color:#fff}
+.vHintBtns{display:flex;gap:6px;flex:none}
+.vHintBtns button{border:0;border-radius:10px;padding:8px 12px;background:#fff;color:#176f7d;font-weight:700;min-height:36px}
+/* ===== ملء الشاشة عند التثبيت (مناطق الأمان) ===== */
+html.standalone body{overscroll-behavior-y:none}
+html.standalone .top{padding-top:env(safe-area-inset-top,0px)}
+
+/* ===== خط Cairo (Google Fonts) مع بدائل نظام ===== */
+body,button,input,select,textarea{font-family:"Cairo","Tajawal",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+/* ===== حالات التركيز للوصول بلوحة المفاتيح (Focus) ===== */
+:focus-visible{outline:3px solid var(--gold,#c8a15b);outline-offset:2px;border-radius:10px}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline-offset:0}
+/* ===== نقش هندسي خفيف (SVG مضمّن على نمط Hero Patterns) ===== */
+.vHero{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath d='M22 2l4.4 15.6L42 22l-15.6 4.4L22 42l-4.4-15.6L2 22l15.6-4.4z' fill='%23176f7d' fill-opacity='0.08'/%3E%3C/svg%3E");background-size:44px 44px}
