@@ -1278,7 +1278,7 @@ const rqSearch=document.getElementById('ruqyahSearch');if(rqSearch)rqSearch.onin
 <div id="globalMiniPlayer" class="globalMiniPlayer" aria-label="مشغل التلاوة المصغر" style="display:none" onclick="openCurrentReaderFromMini(event)">
   <div class="miniPlayerInfo"><span id="miniPlayerIcon">🎧</span><div><b id="miniPlayerTitle">لا توجد تلاوة</b><small id="miniPlayerReader">—</small></div></div>
   <div class="miniPlayerActions"><button id="miniPlayBtn" onclick="toggleAudio()">▶ تشغيل</button><button id="miniMuteBtn" onclick="toggleMute()">🔊 صوت</button><button id="miniCloseBtn" title="إيقاف وإغلاق التلاوة" onclick="event.stopPropagation();closeMiniReaderPlayer()">✕</button></div>
-</div>
+</div><script id="v34-runtime">
 (function(){
  window.changeMushafFont=function(delta){
    mushafFont=Math.max(20,Math.min(42,(Number(mushafFont)||28)+Number(delta||0)));

@@ -1338,7 +1338,7 @@ function loadRec(force){
   if(!stale){loading=Promise.resolve();return loading}
   var go=function(){
     return fetchReciters().then(function(rs){var l=build(rs);if(l.length>20){snapshot(l);finalize(l);renderAfterLoad()}})
-      .catch(function(){if(!snap&&host){host.innerHTML='<div class="notice">'+ic('wifioff')+' تعذّر تحميل قائمة القرّاء. تحقق من الاتصال ثم <button type="button" class="primary" onclick="loadReciters(true)">أعد المحاولة</button></div>'}else if(!snap){finalize([]);renderAfterLoad()}})
+      .catch(function(){if(!snap){finalize([]);renderAfterLoad();if(host)host.insertAdjacentHTML('afterbegin','<div class="notice">'+ic('wifioff')+' تعذّر تحميل بقية القرّاء. تحقق من الاتصال ثم <button type="button" class="primary" onclick="loadReciters(true)">أعد المحاولة</button></div>')}})
       .then(function(){loading=null});
   };
   /* مع وجود لقطة: لا نزاحم التشغيل الأول — التحديث بعد الخمول */
