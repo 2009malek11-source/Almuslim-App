@@ -1036,6 +1036,8 @@ if(typeof _sh3==='function'){window.show=function(id){if(id==='install')buildIns
 
 /* بطاقة في الرئيسية */
 function addInstallTile(){
+  /* V106: لا بطاقة تثبيت في الرئيسية — التثبيت والمشاركة داخل الإعدادات فقط */
+  var old=$('v105InstTile');if(old)old.remove();return;
   if($('v105InstTile'))return;
   var tiles=document.querySelectorAll('#home .tile');if(!tiles.length)return;
   var t=document.createElement('div');t.className='tile';t.id='v105InstTile';t.setAttribute('role','button');t.setAttribute('tabindex','0');
@@ -1306,7 +1308,7 @@ function build(rs){
   var out=[];
   rs.forEach(function(r){(r.moshaf||[]).forEach(function(m){
     if(!m||!m.server)return;
-    out.push({id:'mp3-'+r.id+'-'+m.id,mp3Id:r.id,name:r.name,edition:'mp3quran',server:m.server,moshafId:m.id,surahList:String(m.surah_list||'').split(',').filter(Boolean).map(Number),rewaya:m.name||'رواية غير محددة',search:[r.name,m.name||'']});
+    out.push({id:'mp3-'+r.id+'-'+m.id,mp3Id:r.id,name:r.name,edition:'mp3quran',server:String(m.server).replace(/^http:\/\//i,'https://'),moshafId:m.id,surahList:String(m.surah_list||'').split(',').filter(Boolean).map(Number),rewaya:m.name||'رواية غير محددة',search:[r.name,m.name||'']});
   })});
   out.sort(function(a,b){return a.name.localeCompare(b.name,'ar')||a.rewaya.localeCompare(b.rewaya,'ar')});
   return out;
@@ -1454,6 +1456,15 @@ window.playSurah=async function(num){
   }catch(e){}
   return _ps.apply(this,arguments);
 };
+/* مراقب التعليق (Safari): إن لم يبدأ التشغيل خلال 9 ثوانٍ نجرّب التحميل كملف مرة واحدة */
+(function(){
+  var a=$('audio');if(!a||a.__v106w)return;a.__v106w=1;var tm=null;
+  a.addEventListener('loadstart',function(){clearTimeout(tm);tm=setTimeout(function(){
+    if(a.paused||a.readyState>=3||!a.currentSrc||/^(blob|data):/.test(a.currentSrc))return;
+    try{a.dispatchEvent(new Event('error'))}catch(e){}
+  },9000)});
+  ['playing','canplay','pause','emptied'].forEach(function(ev){a.addEventListener(ev,function(){clearTimeout(tm)})});
+})();
 /* عند فشل مصدر خارجي: محاولة واحدة لتحميله كملف ثم تشغيله (يحلّ بعض شبكات الجوال) */
 (function(){
   var a=$('audio');if(!a||a.__v106)return;a.__v106=1;var tried={};

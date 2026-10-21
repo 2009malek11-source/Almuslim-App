@@ -6,7 +6,7 @@
    - الإشعارات: عرض + فتح التطبيق عند النقر + فحص تذكيرات دوري (حيث يدعمه المتصفح).
    - لا تُحذف مخازن muslim-audio / muslim-files / muslim-config (تنزيلات المستخدم وإعداداته).
    ===================================================================== */
-const CACHE='muslim-cache-v110';
+const CACHE='muslim-cache-v111';
 const FONTS='muslim-fonts-v1';
 const CORE=['./','./index.html','./manifest.json','./style.css','./script.js','./app-config.js','./icon.png','./icon-192.png','./icon-512.png','./splash-program.png'];
 self.addEventListener('install',e=>{
@@ -18,6 +18,7 @@ self.addEventListener('activate',e=>{
     await Promise.all(keys.filter(k=>k.indexOf('muslim-cache')===0&&k!==CACHE).map(k=>caches.delete(k)));
     if(self.registration.navigationPreload)try{await self.registration.navigationPreload.enable()}catch(_){}
     await self.clients.claim();
+    const cs=await self.clients.matchAll({type:'window'});cs.forEach(c=>c.postMessage({t:'updated'}));
   })());
 });
 self.addEventListener('message',e=>{if(e.data&&e.data.type==='skip-waiting')self.skipWaiting()});
@@ -31,6 +32,18 @@ function swr(e,cache){
     return net.then(r=>r||(req.mode==='navigate'?caches.match('./index.html'):Response.error()));
   });
 }
+/* HTML/JS/CSS: الشبكة أولًا بمهلة قصيرة ثم النسخة المحفوظة — فيصلك أحدث إصدار فورًا ويعمل بلا إنترنت */
+function netFirst(e){
+  const req=e.request;
+  return new Promise(res=>{
+    let done=false;
+    const t=setTimeout(()=>{caches.match(req,{ignoreSearch:req.mode==='navigate'}).then(h=>{if(h&&!done){done=true;res(h)}})},1800);
+    fetch(req).then(r=>{clearTimeout(t);put(CACHE,req,r);if(!done){done=true;res(r)}}).catch(()=>{
+      clearTimeout(t);if(done)return;
+      caches.match(req,{ignoreSearch:req.mode==='navigate'}).then(h=>{done=true;res(h||(req.mode==='navigate'?caches.match('./index.html'):Response.error()))});
+    });
+  });
+}
 self.addEventListener('fetch',e=>{
   const req=e.request;
   if(req.method!=='GET')return;
@@ -38,6 +51,8 @@ self.addEventListener('fetch',e=>{
   const url=new URL(req.url);
   if(url.origin===self.location.origin){
     if(url.pathname.endsWith('/sw.js')||url.pathname.endsWith('/service-worker.js'))return;
+    const d=req.destination;
+    if(req.mode==='navigate'||d==='script'||d==='style'||d==='document'){e.respondWith(netFirst(e));return}
     e.respondWith(swr(e,CACHE));return;
   }
   if(url.hostname==='fonts.googleapis.com'||url.hostname==='fonts.gstatic.com'){e.respondWith(swr(e,FONTS))}
