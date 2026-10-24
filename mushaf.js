@@ -28,7 +28,7 @@ function ensure(){
    '<div class="card"><b>الرواية</b><div class="riwChips" id="mpRiw"></div><div class="mini" id="mpRiwNote"></div></div>'+
    '<div class="mbar"><button id="mpPrev" aria-label="الصفحة السابقة">→</button><input id="mpNum" type="number" min="1" max="604" style="width:84px;text-align:center"><span class="mini">/ 604</span><button id="mpNext" aria-label="الصفحة التالية">←</button><select id="mpSurah" style="flex:1;min-width:130px"></select><select id="mpJuz"></select></div>'+
    '<div class="mpWrap"><div class="mpPage" id="mpPage"><div class="mpLoad">⏳ جارٍ تحميل الصفحة…</div></div></div>'+
-   '<div class="mbar" style="justify-content:center"><button id="mpMinus">A−</button><button id="mpPlus">A+</button><select id="mpPaper"><option value="cream">ورق كريمي</option><option value="white">أبيض</option><option value="sepia">سيبيا</option><option value="gold">ذهبي</option><option value="night">ليلي</option></select><button id="mpFrame">🖼️ الإطار</button></div>'+
+   '<div class="mbar" style="justify-content:center"><button id="mpMinus">A−</button><button id="mpPlus">A+</button><select id="mpPaper"><option value="cream">ورق كريمي</option><option value="white">أبيض</option><option value="sepia">سيبيا</option><option value="gold">ذهبي</option><option value="night">ليلي</option></select><button id="mpFrame">🖼️ الإطار</button><button id="mpRead" class="primary">⛶ وضع القراءة</button></div>'+
    '<div class="mpSheet" id="mpSheet"><b id="mpSheetT"></b><button class="primary" id="mpPlay">▶ استماع للآية</button><button id="mpCopy">📋 نسخ</button><button id="mpClose">✕</button></div>';
   var ref=$('settings');(ref&&ref.parentNode?ref.parentNode:document.body).insertBefore(s,ref||null);
   /* في الواجهة العربية: الزر الأيمن = الصفحة السابقة (→)، والأيسر = التالية (←) */
@@ -43,8 +43,22 @@ function ensure(){
   $('mpPaper').onchange=function(){var c=cfg();c.paper=this.value;save(c);paper()};
   $('mpFrame').onclick=function(){var c=cfg();c.frame=!c.frame;save(c);paper()};
   $('mpClose').onclick=function(){$('mpSheet').classList.remove('show');unhl()};
+  $('mpRead').onclick=function(){reading(true)};
+  /* عناصر التحكم العائمة داخل وضع القراءة */
+  var ov=document.createElement('div');ov.id='mpOv';
+  ov.innerHTML='<button id="mpOvPrev" aria-label="الصفحة السابقة">→</button><span id="mpOvNum"></span><button id="mpOvNext" aria-label="الصفحة التالية">←</button><button id="mpOvExit" aria-label="خروج من وضع القراءة">✕ خروج</button>';
+  document.body.appendChild(ov);
+  $('mpOvPrev').onclick=function(e){e.stopPropagation();go(page-1)};
+  $('mpOvNext').onclick=function(e){e.stopPropagation();go(page+1)};
+  $('mpOvExit').onclick=function(e){e.stopPropagation();reading(false)};
+  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&document.body.classList.contains('mpReading'))reading(false,true)});
   /* سحب أفقي لتقليب الصفحات */
   var sx=null;var pg=$('mpPage');
+  pg.addEventListener('click',function(e){
+    if(!document.body.classList.contains('mpReading'))return;
+    if(e.target.closest('.w'))return;
+    document.body.classList.toggle('mpShowBars');
+  });
   pg.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
   pg.addEventListener('touchend',function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>60){go(dx>0?page+1:page-1)}},{passive:true});
   document.addEventListener('keydown',function(e){if(!$('mushaf107').classList.contains('active'))return;if(e.key==='ArrowLeft')go(page+1);if(e.key==='ArrowRight')go(page-1)});
@@ -75,6 +89,16 @@ function loadFont(name){
   return loadedFonts[name];
 }
 function surahName(id){var c=chapters&&chapters.chapters[id-1];return c?c.name_arabic:''}
+/* وضع القراءة: الضغط على الزر يملأ الشاشة بالمصحف وحده.
+   لمسة على هامش الصفحة تُظهر/تُخفي الشريط العلوي والسفلي وأزرار التنقل، ولمسة أخرى تُخفيها. */
+function reading(on,fromFs){
+  document.body.classList.toggle('mpReading',on);
+  document.body.classList.remove('mpShowBars');
+  if(on){try{var r=document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen;if(r)r.call(document.documentElement).catch(function(){})}catch(e){}}
+  else if(!fromFs){try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+  setTimeout(fit,60);setTimeout(fit,350);
+}
+window.addEventListener('orientationchange',function(){setTimeout(fit,300)});
 function go(n){
   n=Math.max(1,Math.min(604,n|0||1));page=n;var c=cfg();c.page=n;save(c);
   $('mpNum').value=n;$('mpSheet').classList.remove('show');
@@ -115,6 +139,7 @@ function draw(d){
   el.innerHTML=head+'<div class="mpLines" id="mpLines">'+lines+'</div><div class="mpFoot">'+d.page+'</div>';
   paper();fit();syncSurah();
   $('mpLines').onclick=function(e){var w=e.target.closest('.w');if(!w||!w.dataset.vk)return;pick(w.dataset.vk)};
+  $('mpOvNum').textContent=d.page;
   var c=cfg();c.page=d.page;save(c);
 }
 /* ضبط حجم الخط بحيث يملأ أطول سطر عرض الصفحة تمامًا كما في المصحف */
@@ -160,6 +185,6 @@ function bind(){
   var r=$('mp107Reciter');if(r){r.value=c.reciter;r.onchange=function(){var x=cfg();x.reciter=r.value;save(x)}}
 }
 var _show=window.show;
-window.show=function(id){var r=_show.apply(this,arguments);if(id==='mushaf107'){ensure();setTimeout(function(){go(cfg().page||1)},0)}return r};
+window.show=function(id){if(id!=='mushaf107'&&document.body.classList.contains('mpReading'))reading(false);var r=_show.apply(this,arguments);if(id==='mushaf107'){ensure();setTimeout(function(){go(cfg().page||1)},0)}return r};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){ensure();bind()},400)});else setTimeout(function(){ensure();bind()},400);
 })();

@@ -11,7 +11,7 @@
 var $=function(i){return document.getElementById(i)};
 var LG=function(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
 var LS=function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-var K_LOC='muslim-v107-loc',K_SET='muslim-v107-prayer';
+var K_LOC='muslim-v107-loc',K_SET='muslim-v108-prayer';
 var R=Math.PI/180;
 function sin(d){return Math.sin(d*R)}function cos(d){return Math.cos(d*R)}function tan(d){return Math.tan(d*R)}
 function asin(x){return Math.asin(x)/R}function acos(x){return Math.acos(x)/R}function atan2(y,x){return Math.atan2(y,x)/R}
@@ -22,6 +22,7 @@ function fixH(a){a=a-24*Math.floor(a/24);return a<0?a+24:a}
 /* ---------- طرق الحساب (زوايا الفجر والعشاء) ---------- */
 var METHODS={
  egypt:{n:'الهيئة المصرية العامة للمساحة',f:19.5,i:17.5},
+ calib:{n:'المعايرة المعتمدة (مرجع طرابلس) — لكل المدن',f:18.5,i:18},
  mwl:{n:'رابطة العالم الإسلامي',f:18,i:17},
  makkah:{n:'أم القرى (مكة المكرمة)',f:18.5,im:90},
  isna:{n:'أمريكا الشمالية (ISNA)',f:15,i:15},
@@ -48,6 +49,8 @@ var TZ_METHOD={
 var HANAFI_TZ=/^Asia\/(Karachi|Kolkata|Calcutta|Dhaka|Kabul|Tashkent|Samarkand|Bishkek|Dushanbe)$/;
 function tzName(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){return ''}}
 function autoMethod(lat,lon){
+  /* المعايرة المعتمدة (طرابلس) هي الأساس لكل مدن العالم؛ الطرق الإقليمية اختيارية من الإعدادات */
+  return 'calib';
   var tz=tzName();
   if(TZ_METHOD[tz])return TZ_METHOD[tz];
   if(/^America\//.test(tz)||/^(US|Canada)\//.test(tz))return 'isna';
@@ -60,7 +63,7 @@ function autoMethod(lat,lon){
   if(lon<-30&&lat>15)return 'isna';
   return 'mwl';
 }
-function autoAsr(){return HANAFI_TZ.test(tzName())?2:1}
+function autoAsr(){return 1}
 
 /* ---------- الحساب الفلكي ---------- */
 function julian(y,m,d){if(m<=2){y-=1;m+=12}var A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5}
@@ -106,7 +109,7 @@ function compute(date,lat,lon,elev,methodId,asrF,hijriMonth){
 /* ---------- إعدادات الصلاة ---------- */
 var DEF={before:10,after:10,adhan:true,muezzin:'makkah',method:'auto',asr:'auto',notif:true,
   on:{fajr:true,sunrise:false,dhuhr:true,asr:true,maghrib:true,isha:true},
-  tune:{fajr:0,sunrise:0,dhuhr:1,asr:0,maghrib:1,isha:0},hijriAdj:0};
+  tune:{fajr:0,sunrise:-1,dhuhr:3,asr:0,maghrib:4,isha:1},hijriAdj:0};
 function cfg(){var c=LG(K_SET,{});var o=JSON.parse(JSON.stringify(DEF));Object.keys(c).forEach(function(k){if(k==='on'||k==='tune')Object.assign(o[k],c[k]);else o[k]=c[k]});return o}
 function saveCfg(c){LS(K_SET,c)}
 var NAMES={fajr:'الفجر',sunrise:'الشروق',dhuhr:'الظهر',asr:'العصر',maghrib:'المغرب',isha:'العشاء'};

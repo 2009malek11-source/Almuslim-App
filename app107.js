@@ -161,7 +161,7 @@ function homeSections(){
   /* بطاقة الصلاة القادمة */
   var wrap=document.createElement('div');wrap.id='v107Home';
   wrap.innerHTML=
-   '<div class="v107HeroNext v107Rv" id="v107Next" role="button" tabindex="0"><div><small>الصلاة القادمة</small><b id="v107NextName">حدّد موقعك</b><small id="v107NextTime">اضغط لعرض مواقيت الصلاة</small></div><div class="cd" id="v107NextCd">--:--:--</div></div>';
+   '<div class="v107HeroNext v107Rv" id="v107Next" role="button" tabindex="0"><div><small>الصلاة القادمة</small><b id="v107NextName">حدّد موقعك</b><small id="v107NextTime">اضغط لعرض مواقيت الصلاة</small></div><div class="cd" id="v107NextCd">--:--:--</div></div><div class="v107Strip" id="v107Strip"></div>';
   if(menu)menu.parentNode.insertBefore(wrap,menu);else home.appendChild(wrap);
   $('v107Next').onclick=function(){show('prayer')};
   /* قسم المميزات */
@@ -169,15 +169,13 @@ function homeSections(){
   f.innerHTML='<h3>✨ مميزات التطبيق</h3><div class="v107Feat">'+
    [['🕌','مواقيت دقيقة','بحسب موقعك تلقائيًا مع تذكير وأذان'],['📖','مصحف المدينة','صفحات كالمصحف الورقي بالتشكيل والوقوف'],['📜','الصحيحان','البخاري ومسلم مع بحث وتخريج'],['🎧','قرّاء وتلاوات','عشرات القرّاء والروايات وتحميل للاستماع بلا إنترنت'],['🤲','أذكار بصوت بشري','تسجيلات حقيقية وعدّاد وتنبيهات'],['🔒','خصوصية','بياناتك على جهازك فقط']].map(function(x){return '<div class="f"><span>'+x[0]+'</span><b>'+x[1]+'</b><small>'+x[2]+'</small></div>'}).join('')+'</div>';
   home.appendChild(f);
-  /* آراء المستخدمين (واجهة فقط الآن) */
-  var t=document.createElement('div');t.className='v107Sec v107Rv';
-  t.innerHTML='<h3>💬 آراء المستخدمين</h3><div class="v107Testi">'+
-   [['تطبيق خفيف ومنظّم، والمواقيت دقيقة جدًا في مدينتي.','أبو عبد الله'],['أحببت صفحات المصحف وسهولة التنقل بينها.','أم يوسف'],['الأذكار بصوت بشري مريح، والتذكير في وقته.','سلمان']].map(function(x){return '<div class="t"><p>'+x[0]+'</p><b>— '+x[1]+'</b></div>'}).join('')+'</div><p class="mini">* عرض تجريبي للمنظر فقط، وسيُفعَّل لاحقًا عند اعتماد التطبيق.</p>';
-  home.appendChild(t);
-  /* التواصل (واجهة فقط الآن) */
-  var c=document.createElement('div');c.className='v107Sec v107Rv';
-  c.innerHTML='<h3>✉️ تواصل معنا</h3><div class="v107Contact"><input placeholder="الاسم" disabled><input placeholder="البريد الإلكتروني" disabled><textarea rows="3" placeholder="رسالتك" disabled></textarea><button class="primary" disabled>إرسال</button><div class="soon">سيُفعَّل نموذج التواصل لاحقًا عند اعتماد التطبيق.</div></div>';
-  home.appendChild(c);
+  /* التواصل: ميزة مخفية حتى يوضع بريد الاستلام في app-config.js (window.CONTACT_EMAIL) */
+  if(window.CONTACT_EMAIL){
+    var c=document.createElement('div');c.className='v107Sec v107Rv';
+    c.innerHTML='<h3>✉️ تواصل معنا</h3><form class="v107Contact" id="v107ContactForm"><input name="n" placeholder="الاسم" required><textarea name="m" rows="3" placeholder="رسالتك" required></textarea><button class="primary" type="submit">إرسال</button></form>';
+    home.appendChild(c);
+    $('v107ContactForm').onsubmit=function(e){e.preventDefault();var f=e.target;location.href='mailto:'+window.CONTACT_EMAIL+'?subject='+encodeURIComponent('رسالة من تطبيق المسلم — '+f.n.value)+'&body='+encodeURIComponent(f.m.value)};
+  }
   /* ظهور عند التمرير */
   var io='IntersectionObserver' in window?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12}):null;
   document.querySelectorAll('#home .v107Rv,#home .tile').forEach(function(el){if(io){el.classList.add('v107Rv');io.observe(el)}else el.classList.add('in')});
@@ -194,7 +192,15 @@ function homeTiles(){
   tile.innerHTML='<span class="ico">🕌</span><b>مواقيت الصلاة</b><small>دقيقة بحسب موقعك مع تذكير وأذان</small>';
   menu.insertBefore(tile,menu.firstChild);
 }
+var stripKey='';
+function strip(){
+  var P=window.v107Prayer,el=$('v107Strip'),l=P&&P.getLoc&&P.getLoc();if(!el||!l)return;
+  var now=new Date(),t=P.timesFor(now,l),k=now.getDate()+':'+now.getHours()+':'+now.getMinutes();if(k===stripKey)return;stripKey=k;
+  var cur=null,O=['fajr','sunrise','dhuhr','asr','maghrib','isha'];O.forEach(function(x){if(t[x]&&t[x]<=now)cur=x});
+  el.innerHTML=O.map(function(x){return '<div class="'+(x===cur?'cur':'')+'"><small>'+P.names[x]+'</small><b>'+P.fmt(t[x])+'</b></div>'}).join('');
+}
 setInterval(function(){
+  strip();
   var P=window.v107Prayer;if(!P||!P.next||!$('v107NextCd'))return;
   var n=P.next();if(!n){return}
   var ms=n.at-Date.now(),s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
@@ -217,6 +223,10 @@ setInterval(function(){
     $('v107X').onclick=function(e){e.stopPropagation();stopCur()};
   }
   function isMain(a){return a&&(a.id==='audio'||(a.closest&&a.closest('#readerInlinePlayer')))}
+  function allowed(a){
+    if(a.getAttribute&&a.getAttribute('data-v107title'))return true;
+    var p=document.querySelector('.page.active');return !!p&&/^(adhkar|ruqyah|hadith107|hadith|hadithDetail|hadithCollection|modes|daily|children)$/.test(p.id);
+  }
   function titleOf(a){
     var t=a.getAttribute&&a.getAttribute('data-v107title');if(t)return t;
     try{var c=a.closest&&a.closest('.card,.adkCard,.hdCard,article,.v27audio');var h=c&&c.querySelector('h3,h2,b');if(h)return '🎙️ '+h.textContent.trim().slice(0,60)}catch(e){}
@@ -234,7 +244,7 @@ setInterval(function(){
   var op=HTMLMediaElement.prototype.play;
   HTMLMediaElement.prototype.play=function(){
     var a=this;
-    if(a.tagName==='AUDIO'&&!isMain(a)&&a.id!=='v107-ignore'){
+    if(a.tagName==='AUDIO'&&!isMain(a)&&a.id!=='v107-ignore'&&allowed(a)){
       if(!a.__v107){a.__v107=1;
         a.addEventListener('pause',function(){if(a===cur)sync()});
         a.addEventListener('ended',function(){if(a===cur){cur=null;sync()}});
@@ -380,7 +390,19 @@ async function refreshReminders(){
   },true);
 })();
 
+/* نقل صفوف التشخيص/التحديث التي تُحقن وقت التشغيل إلى فئة «عن التطبيق» */
+function moveDiag(){
+  var about=document.querySelector('#stgcat-about .stgGroup');if(!about)return;
+  var btn=Array.prototype.find.call(document.querySelectorAll('#settings button'),function(b){return /نسخ تقرير المشكلة|تحديث التطبيق/.test(b.textContent)});
+  if(!btn)return;
+  var el=btn;while(el.parentElement&&!el.parentElement.classList.contains('stgGroup'))el=el.parentElement;
+  if(!el||el.parentElement===about)return;
+  var prev=el.previousElementSibling;
+  if(prev&&/الإصدار|التشخيص/.test(prev.textContent)&&prev.children.length<4)about.appendChild(prev);
+  about.appendChild(el);
+}
 function boot(){
+  setTimeout(moveDiag,300);setTimeout(moveDiag,2500);
   document.querySelectorAll('details.stgCat .stgGroup').forEach(function(g){g.classList.add('open')});
   buildDrawer();homeTiles();homeSections();
   window.v107Greetings();window.v107GreetSchedule();refreshReminders();

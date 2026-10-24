@@ -5,3 +5,5 @@ window.AUDIO_PROXY = '';
    مثال (يحتاج مصدرًا حقيقيًا تملك حق استخدامه):
    window.HADITH_AUDIO = function(book,id){ return 'https://example.org/hadith/'+book+'/'+id+'.mp3'; };
 */
+/* ميزة «تواصل معنا» مخفية الآن. عند وضع بريد الاستلام هنا يظهر نموذج التواصل في الرئيسية تلقائيًا:
+   window.CONTACT_EMAIL = 'name@example.com'; */

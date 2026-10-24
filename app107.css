@@ -166,3 +166,44 @@ body:not(.dlManage) #downloads .danger,body:not(.dlManage) #downloads [data-del]
 body.v107MenuOpen #v107InstallBar,body.v107MenuOpen #v107Bar{display:none!important}
 
 details.stgCat .stgGroup>h3{pointer-events:none}details.stgCat .stgGroup>h3::after{display:none}
+
+/* ---------- وضع القراءة (ملء الشاشة بالمصحف) ---------- */
+#mpOv{position:fixed;inset-inline:0;bottom:0;z-index:99000;display:none;justify-content:center;align-items:center;gap:10px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#000a);color:#fff}
+#mpOv button{border:1px solid #fff6;background:#0008;color:#fff;border-radius:12px;min-height:44px;min-width:48px;padding:0 14px;font:inherit}
+#mpOv #mpOvNum{min-width:44px;text-align:center;font-weight:700}
+body.mpReading.mpShowBars #mpOv{display:flex}
+body.mpReading header.top,body.mpReading nav.nav,body.mpReading #v101Dock,body.mpReading #v107Burger,body.mpReading #globalMiniPlayer,body.mpReading #v107InstallBar,body.mpReading #mushaf107>.section,body.mpReading #mushaf107>.card,body.mpReading #mushaf107>.mbar{display:none!important}
+body.mpReading.mpShowBars header.top{display:flex!important;position:fixed;top:0;inset-inline:0;z-index:99001}
+body.mpReading{overflow:hidden;background:var(--mp-bg,#fbf6e8)}
+body.mpReading #mushaf107{position:fixed;inset:0;z-index:98000;padding:0!important;margin:0!important;background:var(--mp-bg,#fbf6e8);display:flex!important;align-items:center;justify-content:center;overflow:hidden}
+body.mpReading .mpWrap{width:100%;height:100dvh;align-items:center}
+body.mpReading .mpPage{width:min(100vw,calc(100dvh/1.5));height:min(100dvh,calc(100vw*1.5));aspect-ratio:auto;border-radius:0;box-shadow:none;padding:2.4% 3.4%}
+body.mpReading .mpPage:before{inset:4px}
+
+.v107Strip{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:0 0 14px}
+.v107Strip div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 2px;text-align:center;line-height:1.5}
+.v107Strip small{display:block;font-size:calc(11px*var(--v105-fs,1));opacity:.8}
+.v107Strip b{display:block;font-size:calc(13px*var(--v105-fs,1));direction:ltr;font-variant-numeric:tabular-nums}
+.v107Strip .cur{border-color:var(--green);box-shadow:0 0 0 2px color-mix(in srgb,var(--green) 30%,transparent)}
+.mqB{display:inline-block;font-size:calc(11px*var(--v105-fs,1));border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.mqB.ok{background:color-mix(in srgb,var(--green) 16%,transparent);border-color:var(--green)}
+.mqItem{display:flex;gap:10px;align-items:center;margin:8px 0}
+
+/* ---------- مفاتيح التبديل: إصلاح انحراف الدائرة عن الشريط ---------- */
+.stgSw input[type=checkbox]{box-sizing:border-box!important;width:46px!important;height:27px!important;min-width:46px!important;min-height:27px!important;max-height:27px!important;padding:0!important;border:0!important;margin:0!important;border-radius:999px!important;appearance:none;-webkit-appearance:none;position:relative!important;display:inline-block;vertical-align:middle;line-height:0}
+.stgSw input[type=checkbox]:before{content:""!important;position:absolute!important;top:3px!important;bottom:auto!important;left:auto!important;right:3px!important;width:21px!important;height:21px!important;margin:0!important;border-radius:50%!important;background:#fff!important;box-shadow:0 1px 3px #0004;transform:none!important;transition:right .2s,left .2s}
+.stgSw input[type=checkbox]:checked:before{right:22px!important;transform:none!important}
+html[dir=ltr] .stgSw input[type=checkbox]:before{right:auto!important;left:3px!important}
+html[dir=ltr] .stgSw input[type=checkbox]:checked:before{left:22px!important;right:auto!important}
+.stgSw input[type=checkbox]:after{display:none!important}
+.stgChks .chk input[type=checkbox]{width:20px;height:20px;accent-color:var(--green)}
+
+/* ---------- مفاتيح التبديل: إصلاح نزول الدائرة عن الشريط ---------- */
+.stgSw input[type=checkbox]{appearance:none!important;-webkit-appearance:none!important;box-sizing:border-box!important;width:46px!important;min-width:46px!important;height:27px!important;min-height:27px!important;max-height:27px!important;padding:0!important;margin:0!important;border:0!important;border-radius:999px!important;line-height:0!important;display:block!important;position:relative!important;background:var(--line)!important;flex:0 0 46px!important;align-self:center!important}
+.stgSw input[type=checkbox]:checked{background:var(--green)!important}
+.stgSw input[type=checkbox]::before{content:""!important;position:absolute!important;top:3px!important;inset-inline-start:auto!important;right:3px!important;left:auto!important;width:21px!important;height:21px!important;border-radius:50%!important;background:#fff!important;box-shadow:0 1px 3px #0003!important;transform:none!important;transition:right .2s,left .2s!important}
+.stgSw input[type=checkbox]:checked::before{right:22px!important}
+html[dir=ltr] .stgSw input[type=checkbox]::before{right:auto!important;left:3px!important}
+html[dir=ltr] .stgSw input[type=checkbox]:checked::before{left:22px!important;right:auto!important}
+.stgSw{align-items:center!important}
+.stgChks input[type=checkbox]{width:20px;height:20px;accent-color:var(--green)}
